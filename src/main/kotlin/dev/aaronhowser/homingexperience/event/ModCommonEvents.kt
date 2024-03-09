@@ -1,0 +1,30 @@
+package dev.aaronhowser.homingexperience.event
+
+import dev.aaronhowser.homingexperience.HomingExperience
+import dev.aaronhowser.homingexperience.util.ModScheduler
+import net.minecraft.world.entity.ExperienceOrb
+import net.minecraftforge.event.TickEvent
+import net.minecraftforge.event.entity.EntityJoinLevelEvent
+import net.minecraftforge.eventbus.api.SubscribeEvent
+import net.minecraftforge.fml.common.Mod
+
+@Mod.EventBusSubscriber(
+    modid = HomingExperience.MOD_ID
+)
+object ModCommonEvents {
+
+    @SubscribeEvent
+    fun onExperienceOrbSpawn(event: EntityJoinLevelEvent) {
+        val entity = event.entity
+        val level = event.level
+
+        if (level.isClientSide || entity !is ExperienceOrb) return
+    }
+
+    @SubscribeEvent
+    fun serverTick(event: TickEvent) {
+        if (event.side.isClient) return
+        if (event.phase == TickEvent.Phase.END) ModScheduler.tick++
+    }
+
+}
