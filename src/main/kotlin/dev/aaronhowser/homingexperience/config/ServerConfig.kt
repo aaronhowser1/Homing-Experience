@@ -18,7 +18,7 @@ object ServerConfig {
 
         homingRadius = BUILDER
             .comment("The radius in which the experience orbs will home in on the player")
-            .defineInRange("homingRadius", 100.0, 0.1, 1000.0)
+            .defineInRange("homingRadius", 50.0, 0.1, 1000.0)
 
         BUILDER.pop()
 
