@@ -6,21 +6,21 @@ loaderVersion="[3,)" # Require at least 3.x
 license='LGPL'
 
 [[mods]]
-modId="examplemod"
+modId="homingexperience"
 version="${file.jarVersion}"
-displayName="ExampleMod"
-credits="The ExampleMod dev team"
-authors="ExampleModAuthor"
+displayName="Homing Experience"
+credits="Inspired by Homing Exp Orbs by BlackoutRoulette"
+authors="aaronhowser1"
 description='''
 Example mod that uses Kotlin for Forge.
 '''
-[[dependencies.examplemod]]
+[[dependencies.homingexperience]]
     modId="forge"
     mandatory=true
     versionRange="[41,)"
     ordering="NONE"
     side="BOTH"
-[[dependencies.examplemod]]
+[[dependencies.homingexperience]]
     modId="minecraft"
     mandatory=true
     versionRange="[1.19,1.20)"

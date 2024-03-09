@@ -7,8 +7,8 @@ plugins {
 }
 
 version = '1.0.0'
-group = 'example.examplemod'
-archivesBaseName = 'examplemod'
+group = 'dev.aaronhowser.homingexperience'
+archivesBaseName = 'homingexperience'
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
@@ -25,10 +25,10 @@ minecraft {
 
             property 'forge.logging.markers', 'REGISTRIES'
             property 'forge.logging.console.level', 'debug'
-            property 'forge.enabledGameTestNamespaces', 'examplemod'
+            property 'forge.enabledGameTestNamespaces', 'homingexperience'
 
             mods {
-                examplemod {
+                homingexperience {
                     source sourceSets.main
                 }
             }
@@ -39,10 +39,10 @@ minecraft {
 
             property 'forge.logging.markers', 'REGISTRIES'
             property 'forge.logging.console.level', 'debug'
-            property 'forge.enabledGameTestNamespaces', 'examplemod'
+            property 'forge.enabledGameTestNamespaces', 'homingexperience'
 
             mods {
-                examplemod {
+                homingexperience {
                     source sourceSets.main
                 }
             }
@@ -53,10 +53,10 @@ minecraft {
 
             property 'forge.logging.markers', 'REGISTRIES'
             property 'forge.logging.console.level', 'debug'
-            property 'forge.enabledGameTestNamespaces', 'examplemod'
+            property 'forge.enabledGameTestNamespaces', 'homingexperience'
 
             mods {
-                examplemod {
+                homingexperience {
                     source sourceSets.main
                 }
             }
@@ -68,10 +68,10 @@ minecraft {
             property 'forge.logging.markers', 'REGISTRIES'
             property 'forge.logging.console.level', 'debug'
 
-            args '--mod', 'examplemod', '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources')
+            args '--mod', 'homingexperience', '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources')
 
             mods {
-                examplemod {
+                homingexperience {
                     source sourceSets.main
                 }
             }
@@ -104,7 +104,7 @@ compileKotlin {
 jar {
     manifest {
         attributes([
-                'Specification-Title': "examplemod",
+                'Specification-Title': "homingexperience",
                 'Specification-Vendor': "examplemodsareus",
                 'Specification-Version': "1", // We are version 1 of ourselves
                 'Implementation-Title': project.name,

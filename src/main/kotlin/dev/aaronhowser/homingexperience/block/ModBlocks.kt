@@ -1,6 +1,6 @@
-package example.examplemod.block
+package dev.aaronhowser.homingexperience.block
 
-import example.examplemod.ExampleMod
+import dev.aaronhowser.homingexperience.ExampleMod
 import net.minecraft.world.level.block.Block
 import net.minecraft.world.level.block.state.BlockBehaviour
 import net.minecraft.world.level.material.Material

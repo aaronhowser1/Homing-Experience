@@ -1,6 +1,6 @@
-package example.examplemod
+package dev.aaronhowser.homingexperience
 
-import example.examplemod.block.ModBlocks
+import dev.aaronhowser.homingexperience.block.ModBlocks
 import net.minecraft.client.Minecraft
 import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent
@@ -20,7 +20,7 @@ import thedarkcolour.kotlinforforge.forge.runForDist
  */
 @Mod(ExampleMod.ID)
 object ExampleMod {
-    const val ID = "examplemod"
+    const val ID = "homingexperience"
 
     // the logger for our mod
     val LOGGER: Logger = LogManager.getLogger(ID)
