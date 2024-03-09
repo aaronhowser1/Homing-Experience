@@ -11,22 +11,15 @@ import org.apache.logging.log4j.Logger
 import thedarkcolour.kotlinforforge.forge.MOD_BUS
 import thedarkcolour.kotlinforforge.forge.runForDist
 
-/**
- * Main mod class. Should be an `object` declaration annotated with `@Mod`.
- * The modid should be declared in this object and should match the modId entry
- * in mods.toml.
- *
- * An example for blocks is in the `blocks` package of this mod.
- */
-@Mod(ExampleMod.ID)
-object ExampleMod {
-    const val ID = "homingexperience"
+@Mod(HomingExperience.MOD_ID)
+object HomingExperience {
+    const val MOD_ID = "homingexperience"
 
     // the logger for our mod
-    val LOGGER: Logger = LogManager.getLogger(ID)
+    val LOGGER: Logger = LogManager.getLogger(MOD_ID)
 
     init {
-        LOGGER.log(Level.INFO, "Hello world!")
+        LOGGER.log(Level.INFO, "Loading Homing Experience...")
 
         // Register the KDeferredRegister to the mod-specific event bus
         ModBlocks.REGISTRY.register(MOD_BUS)
