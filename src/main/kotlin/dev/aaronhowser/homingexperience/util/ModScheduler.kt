@@ -16,7 +16,7 @@ object ModScheduler {
     private var scheduler: ScheduledExecutorService? = null
     private val scheduledSyncTasks = HashMultimap.create<Int, Runnable>()
 
-    private fun scheduleSynchronisedTask(ticks: Int, run: Runnable) {
+    fun scheduleSynchronisedTask(ticks: Int, run: Runnable) {
         scheduledSyncTasks.put(tick + ticks, run)
     }
 

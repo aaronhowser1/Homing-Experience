@@ -1,6 +1,7 @@
 package dev.aaronhowser.homingexperience.event
 
 import dev.aaronhowser.homingexperience.HomingExperience
+import dev.aaronhowser.homingexperience.entity.HomingExperienceEntity
 import dev.aaronhowser.homingexperience.util.ModScheduler
 import net.minecraft.world.entity.ExperienceOrb
 import net.minecraftforge.event.TickEvent
@@ -19,6 +20,8 @@ object ModCommonEvents {
         val level = event.level
 
         if (level.isClientSide || entity !is ExperienceOrb) return
+
+        HomingExperienceEntity(entity)
     }
 
     @SubscribeEvent
