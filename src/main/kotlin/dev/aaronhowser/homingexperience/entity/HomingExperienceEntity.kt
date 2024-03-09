@@ -13,7 +13,7 @@ class HomingExperienceEntity(
 ) {
 
     companion object {
-        val allHomingOrbs = mutableListOf<HomingExperienceEntity>()
+        val allHomingOrbs = mutableSetOf<HomingExperienceEntity>()
     }
 
     private var targetPlayer: Player? = null
@@ -34,8 +34,8 @@ class HomingExperienceEntity(
         targetPlayer = getNearestPlayer()
 
         experienceOrbEntity.apply {
-            isNoGravity = !hasTarget
-            noPhysics = !hasTarget
+            isNoGravity = hasTarget
+            noPhysics = hasTarget
 
             setGlowingTag(hasTarget)
         }
@@ -62,10 +62,10 @@ class HomingExperienceEntity(
     private fun tick() {
 
         experienceOrbEntity.apply {
-            if (level.isClientSide) return
+            if (level.isClientSide) return@tick
             if (isRemoved) {
-                this@HomingExperienceEntity.remove()
-                return
+                removeHoming()
+                return@tick
             }
 
             if (tickCount % 20 == 0) {
@@ -73,12 +73,37 @@ class HomingExperienceEntity(
             }
         }
 
+        if (hasTarget) moveCloser()
+
         ModScheduler.scheduleSynchronisedTask(1) {
             tick()
         }
     }
 
-    private fun remove() {
+    private fun moveCloser() {
+        experienceOrbEntity.apply {
+            val target = targetPlayer ?: return
+            val dX = target.x - x
+            val dY = target.y - y
+            val dZ = target.z - z
+
+            val distance = distanceTo(target)
+
+            if (distance < 1) {
+                targetPlayer?.takeXpDelay = 0
+                return
+            }
+
+            val speed = 0.5f
+            val motionX = dX / distance * speed
+            val motionY = dY / distance * speed
+            val motionZ = dZ / distance * speed
+
+            setDeltaMovement(motionX, motionY, motionZ)
+        }
+    }
+
+    private fun removeHoming() {
         HomingExperience.LOGGER.debug("Removing homing orb")
         allHomingOrbs.remove(this)
     }
