@@ -1,7 +1,9 @@
 package dev.aaronhowser.homingexperience.entity
 
 import dev.aaronhowser.homingexperience.HomingExperience
+import dev.aaronhowser.homingexperience.config.ServerConfig
 import dev.aaronhowser.homingexperience.util.ModScheduler
+import net.minecraft.util.Mth
 import net.minecraft.world.entity.ExperienceOrb
 import net.minecraft.world.entity.player.Player
 
@@ -45,7 +47,7 @@ class HomingExperienceEntity(
 
         val nearbyPlayers = experienceOrbEntity.level.players()
             .filter {
-                it.distanceToSqr(experienceOrbEntity) < 100.0 &&
+                it.distanceToSqr(experienceOrbEntity) < Mth.square(ServerConfig.HOMING_RADIUS) &&
                         (experienceOrbEntity.isInWall || it.hasLineOfSight(experienceOrbEntity))
             }
             .sortedBy { it.distanceToSqr(experienceOrbEntity) }
