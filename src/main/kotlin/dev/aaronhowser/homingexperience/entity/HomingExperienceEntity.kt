@@ -16,11 +16,21 @@ class HomingExperienceEntity(
         val allHomingOrbs = mutableSetOf<HomingExperienceEntity>()
     }
 
+    private var enabled = true
+
     private var targetPlayer: Player? = null
         set(value) {
             if (value != field) {
                 field = value
                 HomingExperience.LOGGER.debug("New target player: $value")
+
+                experienceOrbEntity.apply {
+                    isNoGravity = hasTarget
+                    noPhysics = hasTarget
+
+                    setGlowingTag(hasTarget)
+                }
+
             }
         }
 
@@ -32,13 +42,6 @@ class HomingExperienceEntity(
 
         HomingExperience.LOGGER.debug("New homing orb spawned")
         targetPlayer = getNearestPlayer()
-
-        experienceOrbEntity.apply {
-            isNoGravity = hasTarget
-            noPhysics = hasTarget
-
-            setGlowingTag(hasTarget)
-        }
 
         tick()
     }
@@ -60,6 +63,8 @@ class HomingExperienceEntity(
     }
 
     private fun tick() {
+
+        if (!enabled) return
 
         experienceOrbEntity.apply {
             if (level.isClientSide) return@tick
@@ -83,28 +88,34 @@ class HomingExperienceEntity(
     private fun moveCloser() {
         experienceOrbEntity.apply {
             val target = targetPlayer ?: return
-            val dX = target.x - x
-            val dY = target.y - y
-            val dZ = target.z - z
+            if (target.level != level) {
+                targetPlayer = null
 
-            val distance = distanceTo(target)
+                return
+            }
 
-            if (distance < 1) {
+            val differenceVector = target.eyePosition.subtract(position())
+            val distanceSquared = differenceVector.lengthSqr()
+
+            if (distanceSquared < 1) {
                 targetPlayer?.takeXpDelay = 0
                 return
             }
 
-            val speed = 0.5f
-            val motionX = dX / distance * speed
-            val motionY = dY / distance * speed
-            val motionZ = dZ / distance * speed
+            val distance = Mth.sqrt(distanceSquared.toFloat())
 
-            setDeltaMovement(motionX, motionY, motionZ)
+            val speed = ServerConfig.MAX_SPEED
+
+            val motion = differenceVector.scale(speed / distance.toDouble())
+
+            deltaMovement = motion
         }
     }
 
     private fun removeHoming() {
         HomingExperience.LOGGER.debug("Removing homing orb")
+
+        enabled = false
         allHomingOrbs.remove(this)
     }
 }
