@@ -22,21 +22,35 @@ class HomingExperienceEntity(
             }
         }
 
+    private val hasTarget: Boolean
+        get() = targetPlayer != null
+
     init {
         allHomingOrbs.add(this)
 
+        HomingExperience.LOGGER.debug("New homing orb spawned")
         targetPlayer = getNearestPlayer()
 
         experienceOrbEntity.apply {
-            isNoGravity = true
-            noPhysics = true
+            isNoGravity = !hasTarget
+            noPhysics = !hasTarget
+
+            setGlowingTag(isInWall)
         }
 
         tick()
     }
 
     private fun getNearestPlayer(): Player? {
-        return experienceOrbEntity.level.getNearestPlayer(experienceOrbEntity, 10.0)
+
+        val nearbyPlayers = experienceOrbEntity.level.players()
+            .filter {
+                it.distanceToSqr(experienceOrbEntity) < 100.0 &&
+                        (experienceOrbEntity.isInWall || it.hasLineOfSight(experienceOrbEntity))
+            }
+            .sortedBy { it.distanceToSqr(experienceOrbEntity) }
+
+        return nearbyPlayers.firstOrNull()
     }
 
     private fun tick() {
