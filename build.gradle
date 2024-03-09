@@ -6,9 +6,9 @@ plugins {
     id 'org.jetbrains.kotlin.plugin.serialization' version '1.8.21'
 }
 
-version = '1.0.0'
-group = 'dev.aaronhowser.homingexperience'
-archivesBaseName = 'homingexperience'
+version = mod_version
+group = mod_group_id
+archivesBaseName = "homingexperience-${mc_version}"
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
@@ -88,6 +88,20 @@ repositories {
         url = 'https://thedarkcolour.github.io/KotlinForForge/'
         content { includeGroup "thedarkcolour" }
     }
+    maven {
+        name = "Progwml6 maven"
+        url = "https://dvs1.progwml6.com/files/maven/"
+    }
+    maven {
+        name = "ModMaven"
+        url = "https://modmaven.dev"
+    }
+    maven {
+        url "https://cursemaven.com"
+        content {
+            includeGroup "curse.maven"
+        }
+    }
 }
 
 dependencies {
@@ -95,6 +109,12 @@ dependencies {
     minecraft 'net.minecraftforge:forge:1.19.2-43.2.3'
 
     implementation 'thedarkcolour:kotlinforforge:3.12.0'
+
+    compileOnly fg.deobf("mezz.jei:jei-${mc_version}-common-api:${jei_version}")
+    compileOnly fg.deobf("mezz.jei:jei-${mc_version}-forge-api:${jei_version}")
+    runtimeOnly fg.deobf("mezz.jei:jei-${mc_version}-forge:${jei_version}")
+
+    runtimeOnly fg.deobf("curse.maven:spark-361579:4505309")
 }
 
 compileKotlin {
