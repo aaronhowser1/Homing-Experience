@@ -37,7 +37,7 @@ class HomingExperienceEntity(
             isNoGravity = !hasTarget
             noPhysics = !hasTarget
 
-            setGlowingTag(isInWall)
+            setGlowingTag(hasTarget)
         }
 
         tick()
@@ -45,14 +45,18 @@ class HomingExperienceEntity(
 
     private fun getNearestPlayer(): Player? {
 
-        val nearbyPlayers = experienceOrbEntity.level.players()
-            .filter {
-                it.distanceToSqr(experienceOrbEntity) < Mth.square(ServerConfig.HOMING_RADIUS) &&
-                        (experienceOrbEntity.isInWall || it.hasLineOfSight(experienceOrbEntity))
-            }
-            .sortedBy { it.distanceToSqr(experienceOrbEntity) }
+        fun isPlayerValid(player: Player): Boolean {
 
-        return nearbyPlayers.firstOrNull()
+            if (player.isSpectator) return false
+            if (player.distanceToSqr(experienceOrbEntity) > Mth.square(ServerConfig.HOMING_RADIUS)) return false
+
+            return experienceOrbEntity.isInWall || player.hasLineOfSight(experienceOrbEntity)
+
+        }
+
+        return experienceOrbEntity.level.players()
+            .filter { isPlayerValid(it) }
+            .minByOrNull { it.distanceToSqr(experienceOrbEntity) }
     }
 
     private fun tick() {
