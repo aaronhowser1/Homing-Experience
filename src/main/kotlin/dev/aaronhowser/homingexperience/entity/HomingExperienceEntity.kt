@@ -117,24 +117,17 @@ class HomingExperienceEntity(
             return
         }
 
-        val distance = Mth.sqrt(distanceSquared.toFloat())
-
         if (experienceOrbEntity.tickCount % 2 == 0) accelerate()
 
-        val motion = differenceVector.scale(speed / distance.toDouble())
+        val motion = differenceVector.scale(speed.toDouble())
 
-        val oldPos = experienceOrbEntity.position()
-
-        experienceOrbEntity.setPos(
-            experienceOrbEntity.x + motion.x,
-            experienceOrbEntity.y + motion.y,
-            experienceOrbEntity.z + motion.z
+        experienceOrbEntity.push(
+            motion.x,
+            motion.y,
+            motion.z
         )
 
-        val newPos = experienceOrbEntity.position()
-        val difference = newPos.subtract(oldPos)
-
-        println("Orb $currentOrb moved ${difference.length()} on level tick ${experienceOrbEntity.level.gameTime}")
+        println(experienceOrbEntity.deltaMovement.length())
     }
 
     private fun removeHoming() {
