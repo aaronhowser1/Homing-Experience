@@ -14,7 +14,6 @@ class HomingExperienceEntity(
 ) {
 
     companion object {
-        val allHomingOrbs = mutableSetOf<HomingExperienceEntity>()
         var amountOrbs: Int = 0
     }
 
@@ -43,8 +42,6 @@ class HomingExperienceEntity(
         get() = targetPlayer != null
 
     init {
-        allHomingOrbs.add(this)
-
         HomingExperience.LOGGER.debug("New homing orb spawned")
         targetPlayer = getNearestPlayer()
 
@@ -137,6 +134,5 @@ class HomingExperienceEntity(
 
     private fun removeHoming() {
         enabled = false
-        allHomingOrbs.remove(this)
     }
 }
