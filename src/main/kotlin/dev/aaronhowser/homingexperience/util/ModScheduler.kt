@@ -18,7 +18,6 @@ object ModScheduler {
     private val scheduledSyncTasks = HashMultimap.create<Int, Runnable>()
 
     fun scheduleSynchronisedTask(ticks: Int, run: Runnable) {
-        println("A task has been set for $ticks ticks from now")
         scheduledSyncTasks.put(tick + ticks, run)
     }
 
