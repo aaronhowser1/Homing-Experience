@@ -61,6 +61,8 @@ class HomingExperienceEntity(
         fun isPlayerValid(player: Player): Boolean {
 
             if (player.isSpectator) return false
+
+            if (player == targetPlayer && experienceOrbEntity.isInWall) return true
             if (player.distanceToSqr(experienceOrbEntity) > Mth.square(ServerConfig.HOMING_RADIUS)) return false
 
             return experienceOrbEntity.isInWall || player.hasLineOfSight(experienceOrbEntity)
