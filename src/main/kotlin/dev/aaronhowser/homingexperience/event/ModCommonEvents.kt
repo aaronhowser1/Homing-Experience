@@ -27,7 +27,6 @@ object ModCommonEvents {
 
     @SubscribeEvent
     fun serverTick(event: ServerTickEvent) {
-        if (event.side.isClient) return
         if (event.phase == TickEvent.Phase.END) ModScheduler.tick++
     }
 
