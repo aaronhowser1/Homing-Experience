@@ -38,9 +38,6 @@ class HomingExperienceEntity(
 
                 setGlowingTag(hasTarget)
             }
-
-            if (value == null) speed = 0f
-
         }
 
     private val hasTarget: Boolean
@@ -103,15 +100,6 @@ class HomingExperienceEntity(
         }
     }
 
-    private var speed: Float = 0f
-        set(value) {
-            field = value.coerceIn(0f, ServerConfig.MAX_SPEED)
-        }
-
-    private fun accelerate() {
-        speed += ServerConfig.ACCELERATION
-    }
-
     private fun moveCloser() {
         val target = targetPlayer ?: return
         if (target.level != experienceOrbEntity.level) {
@@ -126,10 +114,7 @@ class HomingExperienceEntity(
             targetPlayer?.takeXpDelay = 0
             return
         }
-
-        accelerate()
-
-        val motion = differenceVector.normalize().scale(speed.toDouble())
+        val motion = differenceVector.normalize().scale(ServerConfig.ACCELERATION)
 
         experienceOrbEntity.push(
             motion.x,
