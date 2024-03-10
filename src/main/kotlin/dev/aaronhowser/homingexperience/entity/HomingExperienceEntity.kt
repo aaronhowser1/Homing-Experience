@@ -6,6 +6,7 @@ import dev.aaronhowser.homingexperience.util.ModScheduler
 import net.minecraft.util.Mth
 import net.minecraft.world.entity.ExperienceOrb
 import net.minecraft.world.entity.player.Player
+import net.minecraft.world.phys.Vec3
 
 // Not an actual entity! Just has the logic etc, for compatibility reasons with anything that needs vanilla xp orbs
 class HomingExperienceEntity(
@@ -14,7 +15,10 @@ class HomingExperienceEntity(
 
     companion object {
         val allHomingOrbs = mutableSetOf<HomingExperienceEntity>()
+        var amountOrbs: Int = 0
     }
+
+    private val currentOrb = amountOrbs++
 
     private var enabled = true
 
@@ -31,6 +35,7 @@ class HomingExperienceEntity(
                     setGlowingTag(hasTarget)
                 }
 
+                if (value == null) speed = 0f
             }
         }
 
@@ -43,7 +48,7 @@ class HomingExperienceEntity(
         HomingExperience.LOGGER.debug("New homing orb spawned")
         targetPlayer = getNearestPlayer()
 
-        tick()
+        if (!experienceOrbEntity.level.isClientSide) tick()
     }
 
     private fun getNearestPlayer(): Player? {
@@ -67,6 +72,7 @@ class HomingExperienceEntity(
         if (!enabled) return
 
         experienceOrbEntity.apply {
+
             if (level.isClientSide) return@tick
             if (isRemoved) {
                 removeHoming()
@@ -85,36 +91,53 @@ class HomingExperienceEntity(
         }
     }
 
-    private fun moveCloser() {
-        experienceOrbEntity.apply {
-            val target = targetPlayer ?: return
-            if (target.level != level) {
-                targetPlayer = null
-
-                return
-            }
-
-            val differenceVector = target.eyePosition.subtract(position())
-            val distanceSquared = differenceVector.lengthSqr()
-
-            if (distanceSquared < 1) {
-                targetPlayer?.takeXpDelay = 0
-                return
-            }
-
-            val distance = Mth.sqrt(distanceSquared.toFloat())
-
-            val speed = ServerConfig.MAX_SPEED
-
-            val motion = differenceVector.scale(speed / distance.toDouble())
-
-            deltaMovement = motion
+    private var speed: Float = 0f
+        set(value) {
+            field = value.coerceIn(0f, ServerConfig.MAX_SPEED)
         }
+
+    private fun accelerate() {
+        speed += ServerConfig.ACCELERATION
+    }
+
+    private fun moveCloser() {
+        val target = targetPlayer ?: return
+        if (target.level != experienceOrbEntity.level) {
+            targetPlayer = null
+            return
+        }
+
+        experienceOrbEntity.deltaMovement = Vec3.ZERO
+
+        val differenceVector = target.eyePosition.subtract(experienceOrbEntity.position())
+        val distanceSquared = differenceVector.lengthSqr()
+
+        if (distanceSquared < 1) {
+            targetPlayer?.takeXpDelay = 0
+            return
+        }
+
+        val distance = Mth.sqrt(distanceSquared.toFloat())
+
+        if (experienceOrbEntity.tickCount % 2 == 0) accelerate()
+
+        val motion = differenceVector.scale(speed / distance.toDouble())
+
+        val oldPos = experienceOrbEntity.position()
+
+        experienceOrbEntity.setPos(
+            experienceOrbEntity.x + motion.x,
+            experienceOrbEntity.y + motion.y,
+            experienceOrbEntity.z + motion.z
+        )
+
+        val newPos = experienceOrbEntity.position()
+        val difference = newPos.subtract(oldPos)
+
+        println("Orb $currentOrb moved ${difference.length()} on level tick ${experienceOrbEntity.level.gameTime}")
     }
 
     private fun removeHoming() {
-        HomingExperience.LOGGER.debug("Removing homing orb")
-
         enabled = false
         allHomingOrbs.remove(this)
     }
