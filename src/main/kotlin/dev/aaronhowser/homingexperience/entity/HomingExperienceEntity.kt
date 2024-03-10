@@ -6,7 +6,7 @@ import dev.aaronhowser.homingexperience.util.ModScheduler
 import net.minecraft.util.Mth
 import net.minecraft.world.entity.ExperienceOrb
 import net.minecraft.world.entity.player.Player
-import net.minecraft.world.phys.Vec3
+import kotlin.random.Random
 
 // Not an actual entity! Just has the logic etc, for compatibility reasons with anything that needs vanilla xp orbs
 class HomingExperienceEntity(
@@ -48,7 +48,15 @@ class HomingExperienceEntity(
         HomingExperience.LOGGER.debug("New homing orb spawned")
         targetPlayer = getNearestPlayer()
 
-        if (!experienceOrbEntity.level.isClientSide) tick()
+        if (targetPlayer != null) {
+            experienceOrbEntity.push(
+                Random.nextDouble(-0.25, 0.25),
+                Random.nextDouble(0.25, 0.75),
+                Random.nextDouble(-0.25, 0.25)
+            )
+        }
+
+        tick()
     }
 
     private fun getNearestPlayer(): Player? {
@@ -107,8 +115,6 @@ class HomingExperienceEntity(
             return
         }
 
-        experienceOrbEntity.deltaMovement = Vec3.ZERO
-
         val differenceVector = target.eyePosition.subtract(experienceOrbEntity.position())
         val distanceSquared = differenceVector.lengthSqr()
 
@@ -117,9 +123,9 @@ class HomingExperienceEntity(
             return
         }
 
-        if (experienceOrbEntity.tickCount % 2 == 0) accelerate()
+        accelerate()
 
-        val motion = differenceVector.scale(speed.toDouble())
+        val motion = differenceVector.normalize().scale(speed.toDouble())
 
         experienceOrbEntity.push(
             motion.x,
@@ -127,7 +133,6 @@ class HomingExperienceEntity(
             motion.z
         )
 
-        println(experienceOrbEntity.deltaMovement.length())
     }
 
     private fun removeHoming() {
