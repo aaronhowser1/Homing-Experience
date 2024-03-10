@@ -11,7 +11,7 @@ object ModScheduler {
             handleScheduledTasks(value)
         }
 
-    private val upcomingTasks = HashMultimap.create<Int, Runnable>()
+    private val upcomingTasks: HashMultimap<Int, Runnable> = HashMultimap.create()
 
     fun scheduleTaskInTicks(ticks: Int, run: Runnable) {
         upcomingTasks.put(tick + ticks, run)
