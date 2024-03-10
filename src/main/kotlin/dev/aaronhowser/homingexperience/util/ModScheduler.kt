@@ -1,6 +1,7 @@
 package dev.aaronhowser.homingexperience.util
 
 import com.google.common.collect.HashMultimap
+import dev.aaronhowser.homingexperience.HomingExperience
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.TimeUnit
@@ -17,6 +18,7 @@ object ModScheduler {
     private val scheduledSyncTasks = HashMultimap.create<Int, Runnable>()
 
     fun scheduleSynchronisedTask(ticks: Int, run: Runnable) {
+        println("A task has been set for $ticks ticks from now")
         scheduledSyncTasks.put(tick + ticks, run)
     }
 
@@ -38,17 +40,23 @@ object ModScheduler {
     }
 
     private fun handleSyncScheduledTasks(tick: Int?) {
-        if (scheduledSyncTasks.containsKey(tick)) {
-            val tasks =
-                if (tick == null) scheduledSyncTasks.values().iterator() else scheduledSyncTasks[tick].iterator()
-            while (tasks.hasNext()) {
-                try {
-                    tasks.next().run()
-                } catch (ex: Exception) {
-//                    Logging.logMessage(Level.ERROR, "Unable to run unhandled scheduled task, skipping.", ex);
-                }
-                tasks.remove()
-            }
+
+        if (!scheduledSyncTasks.containsKey(tick)) return
+
+        val tasks = if (tick == null) {
+            scheduledSyncTasks.values().iterator()
+        } else {
+            scheduledSyncTasks[tick].iterator()
         }
+
+        while (tasks.hasNext()) {
+            try {
+                tasks.next().run()
+            } catch (ex: Exception) {
+                HomingExperience.LOGGER.error("Unable to run unhandled scheduled task, skipping.", ex)
+            }
+            tasks.remove()
+        }
+
     }
 }
