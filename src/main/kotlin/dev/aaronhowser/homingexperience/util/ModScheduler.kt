@@ -2,58 +2,34 @@ package dev.aaronhowser.homingexperience.util
 
 import com.google.common.collect.HashMultimap
 import dev.aaronhowser.homingexperience.HomingExperience
-import java.util.concurrent.Executors
-import java.util.concurrent.ScheduledExecutorService
-import java.util.concurrent.TimeUnit
 
 object ModScheduler {
 
     var tick = 0
         set(value) {
             field = value
-            handleSyncScheduledTasks(value)
+            handleScheduledTasks(value)
         }
 
-    private var scheduler: ScheduledExecutorService? = null
-    private val scheduledSyncTasks = HashMultimap.create<Int, Runnable>()
+    private val upcomingTasks = HashMultimap.create<Int, Runnable>()
 
-    fun scheduleSynchronisedTask(ticks: Int, run: Runnable) {
-        scheduledSyncTasks.put(tick + ticks, run)
+    fun scheduleTaskInTicks(ticks: Int, run: Runnable) {
+        upcomingTasks.put(tick + ticks, run)
     }
 
-    private fun scheduleAsyncTask(time: Int, unit: TimeUnit, run: Runnable) {
-        if (scheduler == null) serverStartupTasks()
-        scheduler!!.schedule(run, time.toLong(), unit)
-    }
+    private fun handleScheduledTasks(tick: Int) {
 
-    private fun serverStartupTasks() {
-        if (scheduler != null) scheduler!!.shutdownNow()
-        scheduler = Executors.newScheduledThreadPool(1)
-        handleSyncScheduledTasks(null)
-    }
+        if (!upcomingTasks.containsKey(tick)) return
 
-    private fun serverShutdownTasks() {
-        handleSyncScheduledTasks(null)
-        scheduler!!.shutdownNow()
-        scheduler = null
-    }
-
-    private fun handleSyncScheduledTasks(tick: Int?) {
-
-        if (!scheduledSyncTasks.containsKey(tick)) return
-
-        val tasks = if (tick == null) {
-            scheduledSyncTasks.values().iterator()
-        } else {
-            scheduledSyncTasks[tick].iterator()
-        }
+        val tasks = upcomingTasks[tick].iterator()
 
         while (tasks.hasNext()) {
             try {
                 tasks.next().run()
-            } catch (ex: Exception) {
-                HomingExperience.LOGGER.error("Unable to run unhandled scheduled task, skipping.", ex)
+            } catch (e: Exception) {
+                HomingExperience.LOGGER.error(e.toString())
             }
+
             tasks.remove()
         }
 

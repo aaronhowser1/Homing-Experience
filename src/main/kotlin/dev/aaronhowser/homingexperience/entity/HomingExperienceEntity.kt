@@ -91,7 +91,7 @@ class HomingExperienceEntity(
 
         if (hasTarget) moveCloser()
 
-        ModScheduler.scheduleSynchronisedTask(1) {
+        ModScheduler.scheduleTaskInTicks(1) {
             tick()
         }
     }
