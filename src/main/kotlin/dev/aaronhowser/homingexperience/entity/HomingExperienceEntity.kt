@@ -21,21 +21,26 @@ class HomingExperienceEntity(
 
     private var enabled = true
 
+    // If it's not null and it wants to become null, only do it if the Player is in a different level or is removed
     private var targetPlayer: Player? = null
         set(value) {
-            if (value != field) {
-                field = value
-                HomingExperience.LOGGER.debug("New target player: $value")
+            if (field?.isRemoved == true) field = null
 
-                experienceOrbEntity.apply {
-                    isNoGravity = hasTarget
-                    noPhysics = hasTarget
-
-                    setGlowingTag(hasTarget)
-                }
-
-                if (value == null) speed = 0f
+            if (value == null && field != null) {
+                if (field?.level != experienceOrbEntity.level) return
             }
+
+            field = value
+
+            experienceOrbEntity.apply {
+                isNoGravity = hasTarget
+                noPhysics = hasTarget
+
+                setGlowingTag(hasTarget)
+            }
+
+            if (value == null) speed = 0f
+
         }
 
     private val hasTarget: Boolean
