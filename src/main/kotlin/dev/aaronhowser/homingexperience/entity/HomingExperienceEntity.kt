@@ -5,6 +5,7 @@ import dev.aaronhowser.homingexperience.util.ModScheduler
 import net.minecraft.util.Mth
 import net.minecraft.world.entity.ExperienceOrb
 import net.minecraft.world.entity.player.Player
+import net.minecraft.world.phys.Vec3
 import kotlin.random.Random
 
 // Not an actual entity! Just has the logic etc, for compatibility reasons with anything that needs vanilla xp orbs
@@ -114,6 +115,7 @@ class HomingExperienceEntity(
 
         if (distanceSquared < 1) {
             targetPlayer?.takeXpDelay = 0
+            experienceOrbEntity.deltaMovement = Vec3.ZERO
             return
         }
         val motion = differenceVector.normalize().scale(ServerConfig.ACCELERATION)
