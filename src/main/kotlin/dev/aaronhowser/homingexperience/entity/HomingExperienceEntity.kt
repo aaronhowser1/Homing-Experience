@@ -1,6 +1,5 @@
 package dev.aaronhowser.homingexperience.entity
 
-import dev.aaronhowser.homingexperience.HomingExperience
 import dev.aaronhowser.homingexperience.config.ServerConfig
 import dev.aaronhowser.homingexperience.util.ModScheduler
 import net.minecraft.util.Mth
@@ -24,10 +23,14 @@ class HomingExperienceEntity(
     // If it's not null and it wants to become null, only do it if the Player is in a different level or is removed
     private var targetPlayer: Player? = null
         set(value) {
-            if (field?.isRemoved == true) field = null
 
-            if (value == null && field != null) {
-                if (field?.level != experienceOrbEntity.level) return
+            if (field == value) return
+
+            if (hasTarget && value == null) {
+                val targetChangedDimensions = targetPlayer?.level != experienceOrbEntity.level
+                val targetRemoved = targetPlayer?.isRemoved == true
+
+                if (!targetChangedDimensions && !targetRemoved) return
             }
 
             field = value
@@ -44,7 +47,6 @@ class HomingExperienceEntity(
         get() = targetPlayer != null
 
     init {
-        HomingExperience.LOGGER.debug("New homing orb spawned")
         targetPlayer = getNearestPlayer()
 
         if (targetPlayer != null) {
