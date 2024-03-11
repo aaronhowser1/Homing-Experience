@@ -26,7 +26,7 @@ object ServerConfig {
 
         acceleration = BUILDER
             .comment("The acceleration of the experience orbs")
-            .defineInRange("acceleration", 0.01, 0.0, 1.0)
+            .defineInRange("acceleration", 0.1, 0.0, 10.0)
 
         BUILDER.pop()
 
