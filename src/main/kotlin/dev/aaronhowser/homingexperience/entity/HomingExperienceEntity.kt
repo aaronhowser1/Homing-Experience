@@ -15,6 +15,17 @@ class HomingExperienceEntity(
 
     companion object {
         var amountOrbs: Int = 0
+
+        private val recentDeathLocations: MutableSet<Vec3> = mutableSetOf()
+
+        fun addRecentDeathLocation(location: Vec3) {
+            recentDeathLocations.add(location)
+
+            ModScheduler.scheduleTaskInTicks(5) {
+                recentDeathLocations.remove(location)
+            }
+        }
+
     }
 
     private val currentOrb = amountOrbs++
@@ -48,17 +59,22 @@ class HomingExperienceEntity(
         get() = targetPlayer != null
 
     init {
-        targetPlayer = getNearestPlayer()
+        val orbSpawnedNearDeath = recentDeathLocations.any { it.distanceToSqr(experienceOrbEntity.position()) < 1 }
 
-        if (targetPlayer != null) {
-            experienceOrbEntity.push(
-                Random.nextDouble(-0.25, 0.25),
-                Random.nextDouble(0.25, 0.75),
-                Random.nextDouble(-0.25, 0.25)
-            )
+        if (orbSpawnedNearDeath || !ServerConfig.ONLY_HOME_ON_DEATH) {
+            targetPlayer = getNearestPlayer()
+
+            if (targetPlayer != null) {
+
+                experienceOrbEntity.push(
+                    Random.nextDouble(-0.25, 0.25),
+                    Random.nextDouble(0.25, 0.75),
+                    Random.nextDouble(-0.25, 0.25)
+                )
+            }
+
+            tick()
         }
-
-        tick()
     }
 
     private fun getNearestPlayer(): Player? {
