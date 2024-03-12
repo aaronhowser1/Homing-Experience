@@ -64,16 +64,35 @@ class HomingExperienceEntity(
         if (orbSpawnedNearDeath || !ServerConfig.ONLY_HOME_ON_DEATH) {
             targetPlayer = getNearestPlayer()
 
-            if (targetPlayer != null) {
-
-                experienceOrbEntity.push(
-                    Random.nextDouble(-0.25, 0.25),
-                    Random.nextDouble(0.25, 0.75),
-                    Random.nextDouble(-0.25, 0.25)
-                )
-            }
+            if (targetPlayer != null) pushUp()
 
             tick()
+        }
+    }
+
+    private fun pushUp() {
+        val randomUpwardsVector = Vec3(
+            Random.nextDouble(-0.25, 0.25),
+            Random.nextDouble(0.25, 0.75),
+            Random.nextDouble(-0.25, 0.25)
+        )
+
+
+        println("Movement before pushing up: ${experienceOrbEntity.deltaMovement}")
+        experienceOrbEntity.push(
+            randomUpwardsVector.x,
+            randomUpwardsVector.y,
+            randomUpwardsVector.z
+        )
+        println("Movement after pushing up: ${experienceOrbEntity.deltaMovement}")
+        ModScheduler.scheduleTaskInTicks(20) {
+            println("Movement before pushing down: ${experienceOrbEntity.deltaMovement}")
+            experienceOrbEntity.push(
+                randomUpwardsVector.x * -0.75,
+                randomUpwardsVector.y * -0.75,
+                randomUpwardsVector.z * -0.75
+            )
+            println("Movement after pushing down: ${experienceOrbEntity.deltaMovement}")
         }
     }
 
@@ -134,7 +153,12 @@ class HomingExperienceEntity(
             experienceOrbEntity.deltaMovement = Vec3.ZERO
             return
         }
-        val motion = differenceVector.normalize().scale(ServerConfig.ACCELERATION)
+
+        val pushForceFactor = 1 + (experienceOrbEntity.tickCount / 20)
+
+        val motion = differenceVector
+            .normalize()
+            .scale(ServerConfig.ACCELERATION * pushForceFactor)
 
         experienceOrbEntity.push(
             motion.x,
